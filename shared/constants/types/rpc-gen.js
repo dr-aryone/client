@@ -352,6 +352,7 @@ export const favoriteFolderConflictType = {
   none: 0,
   inConflict: 1,
   inConflictAndStuck: 2,
+  clearedConflict: 3,
 }
 
 export const favoriteFolderType = {
