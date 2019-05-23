@@ -229,6 +229,48 @@ protocol teams {
     boolean loadedLatest;
   }
 
+  // HiddenTeamRatchet is the latest hidden chain tail link known for this team;
+  // the existence of a known ratchet means the team better be at least up to this
+  // point, and maybe beyond it.
+  record HiddenTeamRatchet {
+    Seqno seqno;
+    LinkID hash;
+  }
+
+  // Snapshot of a hidden team load
+  record HiddenTeamData {
+    // If set, all other members are invalid except for Chain.ID, Chain.Public,
+    // and Chain.Last.
+    boolean frozen;
+
+    // If set, cannot be loaded ever again. All other members are invalid.
+    boolean tombstoned;
+
+    // Data derived from our (limited) replay of the team chain.
+    HiddenTeamSigChainState chain;
+
+    // These secrets may not match the team chain, always verify before use.
+    // These secrets may be behind or missing if this is a public team.
+    // generation -> seed
+    // generations _must_ start from 1 with no gaps
+    @mpackkey("perTeamKeySeeds")
+    map<PerTeamKeyGeneration,PerTeamKeySeed> perTeamKeySeedsUnverified;
+
+    PerTeamKeyGeneration latestKeyGeneration;
+
+    // application -> generation -> mask
+    // in each slot generations _must_ start from 1 with no gaps
+    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
+
+    // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
+    // The latest seqno of the remote team. Given by the server out of band.
+    // Used for caching.
+    union { null, HiddenTeamRatchet } ratchet;
+
+    // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
+    Time cachedAt;
+  }
+
   record LinkTriple {
     Seqno seqno;
     SeqType seqType;
@@ -246,6 +288,41 @@ protocol teams {
     TeamID id;
     string nameComponent;
     boolean isDeleted;
+  }
+
+  record HiddenTeamSigChainLink {
+    MerkleRootV2 unmerkleRoot;
+    LinkTriple parentChain;
+  }
+
+  // The hidden chain, AKA chain17, doesn't show up in the merkle tree, it's just periodically
+  // pinned there.
+  record HiddenTeamSigChainState {
+
+    @lint("ignore")
+    TeamID ID;
+
+    // Whether this is a public team.
+    boolean public;
+
+    union { null, LinkTriple } last;
+
+    // Keyed by per-team-key generation
+    map<PerTeamKeyGeneration, PerTeamKey> perTeamKeys;
+
+    // Once we derive and check these seeds, we enter them here (as a cache of work).
+    map<PerTeamKeyGeneration,PerTeamKeySeed> perTeamKeySeedsVerified;
+
+    // Creation time of latest PerTeamKey, based on CTime from the
+    // link key appeared in.
+    UnixTime perTeamKeyCTime;
+
+    // This is filled up to lastSeqno.
+    map<Seqno, LinkID> linkIDs;
+
+    // For any link where we have it, fill in merkle sequence information,
+    // and parent chain pointer info.
+    map<Seqno, HiddenTeamSigChainLink> inners;
   }
 
   // FastTeamSigChainState is the state computed by doing a fast reply of the

@@ -6,7 +6,7 @@ import (
 
 type UID [16]byte
 type LinkType int
-type ChainType int
+type ChainType = keybase1.SeqType
 type SigVersion int
 type LinkID [32]byte
 type Seqno = keybase1.Seqno
