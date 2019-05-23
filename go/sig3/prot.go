@@ -90,10 +90,9 @@ type EncryptionParameters struct {
 }
 
 type Tail struct {
-	_struct   bool      `codec:",toarray"`
-	ChainType ChainType `codec:"chaintype"`
-	Seqno     Seqno     `codec:"seqno"`
-	Hash      LinkID    `codec:"hash"` // hash of the outer link
+	Hash      LinkID    `codec:"h"` // hash of the outer link
+	Seqno     Seqno     `codec:"s"`
+	ChainType ChainType `codec:"t"`
 }
 
 type PerTeamKeyBody struct {
