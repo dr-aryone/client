@@ -745,5 +745,5 @@ protocol local {
     string extra; // extra json tbd
   }
 
-  array<ExchangeUrl> getExchangeUrlsLocal(int sessionID);
+  array<ExchangeUrl> getExchangeUrlsLocal();
 }

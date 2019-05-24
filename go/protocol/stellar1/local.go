@@ -1509,7 +1509,6 @@ type ApprovePathURILocalArg struct {
 }
 
 type GetExchangeUrlsLocalArg struct {
-	SessionID int `codec:"sessionID" json:"sessionID"`
 }
 
 type LocalInterface interface {
@@ -1585,7 +1584,7 @@ type LocalInterface interface {
 	ApproveTxURILocal(context.Context, ApproveTxURILocalArg) (TransactionID, error)
 	ApprovePayURILocal(context.Context, ApprovePayURILocalArg) (TransactionID, error)
 	ApprovePathURILocal(context.Context, ApprovePathURILocalArg) (TransactionID, error)
-	GetExchangeUrlsLocal(context.Context, int) ([]ExchangeUrl, error)
+	GetExchangeUrlsLocal(context.Context) ([]ExchangeUrl, error)
 }
 
 func LocalProtocol(i LocalInterface) rpc.Protocol {
@@ -2658,12 +2657,7 @@ func LocalProtocol(i LocalInterface) rpc.Protocol {
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[1]GetExchangeUrlsLocalArg)
-					if !ok {
-						err = rpc.NewTypeError((*[1]GetExchangeUrlsLocalArg)(nil), args)
-						return
-					}
-					ret, err = i.GetExchangeUrlsLocal(ctx, typedArgs[0].SessionID)
+					ret, err = i.GetExchangeUrlsLocal(ctx)
 					return
 				},
 			},
@@ -3050,8 +3044,7 @@ func (c LocalClient) ApprovePathURILocal(ctx context.Context, __arg ApprovePathU
 	return
 }
 
-func (c LocalClient) GetExchangeUrlsLocal(ctx context.Context, sessionID int) (res []ExchangeUrl, err error) {
-	__arg := GetExchangeUrlsLocalArg{SessionID: sessionID}
-	err = c.Cli.Call(ctx, "stellar.1.local.getExchangeUrlsLocal", []interface{}{__arg}, &res)
+func (c LocalClient) GetExchangeUrlsLocal(ctx context.Context) (res []ExchangeUrl, err error) {
+	err = c.Cli.Call(ctx, "stellar.1.local.getExchangeUrlsLocal", []interface{}{GetExchangeUrlsLocalArg{}}, &res)
 	return
 }

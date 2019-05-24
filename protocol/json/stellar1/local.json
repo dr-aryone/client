@@ -2544,12 +2544,7 @@
       "response": "TransactionID"
     },
     "getExchangeUrlsLocal": {
-      "request": [
-        {
-          "name": "sessionID",
-          "type": "int"
-        }
-      ],
+      "request": [],
       "response": {
         "type": "array",
         "items": "ExchangeUrl"
