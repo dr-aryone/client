@@ -13,7 +13,7 @@ type Seqno = keybase1.Seqno
 type Time = keybase1.Time
 type IgnoreIfUnsupported bool
 type KID []byte
-type TeamID = keybase1.TeamID
+type TeamID [16]byte
 type PerTeamKeyGeneration = keybase1.PerTeamKeyGeneration
 type Entropy []byte
 type Sig [64]byte
