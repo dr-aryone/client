@@ -720,7 +720,7 @@ func (s *stellarRetryClient) ValidateStellarURILocal(ctx context.Context, arg st
 	return s.cli.ValidateStellarURILocal(ctx, arg)
 }
 
-func (s *stellarRetryClient) SignTransactionXdrLocal(ctx context.Context, arg stellar1.SignTransactionXdrLocalArg) (res string, err error) {
+func (s *stellarRetryClient) SignTransactionXdrLocal(ctx context.Context, arg stellar1.SignTransactionXdrLocalArg) (res stellar1.SignXdrResult, err error) {
 	return s.cli.SignTransactionXdrLocal(ctx, arg)
 }
 
