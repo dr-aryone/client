@@ -2372,9 +2372,9 @@ export type HasServerKeysRes = $ReadOnly<{hasServerKeys: Boolean}>
 export type HashMeta = Bytes
 export type Hello2Res = $ReadOnly<{encryptionKey: KID, sigPayload: HelloRes, deviceEkKID: KID}>
 export type HelloRes = String
-export type HiddenTeamChain = $ReadOnly<{state: HiddenTeamChainState, perTeamKeySeeds /* perTeamKeySeedsUnverified */: {[key: string]: PerTeamKeySeed}, latestKeyGeneration: PerTeamKeyGeneration, readerKeyMasks: {[key: string]: {[key: string]: MaskB64}}, ratchet?: ?LinkTriple, cachedAt: Time}>
-export type HiddenTeamChainState = $ReadOnly<{ID: TeamID, public: Boolean, last?: ?LinkTriple, perTeamKeys: {[key: string]: PerTeamKey}, perTeamKeySeedsVerified: {[key: string]: PerTeamKeySeed}, perTeamKeyCTime: UnixTime, linkIDs: {[key: string]: LinkID}, inners: {[key: string]: HiddenTeamSigChainLink}}>
-export type HiddenTeamSigChainLink = $ReadOnly<{m /* merkleRoot */: MerkleRootV2, p /* parentChain */: LinkTriple, s /* signer */: Signer}>
+export type HiddenTeamChain = $ReadOnly<{data: HiddenTeamChainData, ratchet?: ?LinkTriple, cachedAt: Time}>
+export type HiddenTeamChainData = $ReadOnly<{ID: TeamID, public: Boolean, last: Seqno, linkIDs: {[key: string]: LinkID}, inner: {[key: string]: HiddenTeamChainLink}, readerKeyMasks: {[key: string]: {[key: string]: MaskB64}}, perTeamKeys: {[key: string]: PerTeamKeyAndSeed}, latestKeyGeneration: PerTeamKeyGeneration, perTeamKeyCTime: UnixTime}>
+export type HiddenTeamChainLink = $ReadOnly<{m /* merkleRoot */: MerkleRootV2, p /* parentChain */: LinkTriple, s /* signer */: Signer}>
 export type HomeScreen = $ReadOnly<{lastViewed: Time, version: Int, visits: Int, items?: ?Array<HomeScreenItem>, followSuggestions?: ?Array<HomeUserSummary>, announcementsVersion: Int}>
 export type HomeScreenAnnouncement = $ReadOnly<{id: HomeScreenAnnouncementID, version: HomeScreenAnnouncementVersion, appLink: AppLinkType, confirmLabel: String, dismissable: Boolean, iconUrl: String, text: String, url: String}>
 export type HomeScreenAnnouncementID = Int
@@ -2622,6 +2622,7 @@ export type PathType =
   | 2 // KBFS_ARCHIVED_2
 
 export type PerTeamKey = $ReadOnly<{gen: PerTeamKeyGeneration, seqno: Seqno, sigKID: KID, encKID: KID}>
+export type PerTeamKeyAndSeed = $ReadOnly<{seed: PerTeamKeySeed, publicKeys: PerTeamKey, verified: Boolean}>
 export type PerTeamKeyGeneration = Int
 export type PerTeamKeySeed = ?string
 export type PerTeamKeySeedItem = $ReadOnly<{seed: PerTeamKeySeed, generation: PerTeamKeyGeneration, seqno: Seqno}>

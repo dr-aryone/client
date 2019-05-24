@@ -229,25 +229,36 @@ protocol teams {
     boolean loadedLatest;
   }
 
+  record PerTeamKeyAndSeed {
+    PerTeamKeySeed seed;
+    PerTeamKey publicKeys;
+    boolean verified;
+  }
+
+  record HiddenTeamChainData {
+    @lint("ignore") TeamID ID;
+    boolean public;
+
+    Seqno last;
+    map<Seqno, LinkID> linkIDs;
+    // For any link where we have it, fill in merkle sequence information,
+    // and parent chain pointer info.
+    map<Seqno, HiddenTeamChainLink> inner;
+
+    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
+
+    map<PerTeamKeyGeneration,PerTeamKeyAndSeed> perTeamKeys;
+    PerTeamKeyGeneration latestKeyGeneration;
+    // Creation time of latest PerTeamKey, based on CTime from the
+    // link key appeared in.
+    UnixTime perTeamKeyCTime;
+  }
+
   // Snapshot of a hidden team load
   record HiddenTeamChain {
 
-    // Data derived from our (limited) replay of the team chain.
-    HiddenTeamChainState state;
+    HiddenTeamChainData data;
 
-    @mpackkey("perTeamKeySeeds")
-    map<PerTeamKeyGeneration,PerTeamKeySeed> perTeamKeySeedsUnverified;
-
-    PerTeamKeyGeneration latestKeyGeneration;
-
-    // application -> generation -> mask
-    // there can be gaps, since only some masks are stored in the hidden chains;
-    // the other might be stored in the main chain (chain3)
-    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
-
-    // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
-    // Chat or the main chain can "ratchet" our view of the hidden chain forward;
-    // we'll assert the ratchet is correct whenever we need to.
     // This is the latest hidden chain tail link known for this team;
     // the existence of a known ratchet means the team better be at least up to this
     // point, and maybe beyond it.
@@ -282,43 +293,13 @@ protocol teams {
     UID u;   // signer UID
   }
 
-  record HiddenTeamSigChainLink {
+  record HiddenTeamChainLink {
     @jsonkey("m") @mpackkey("m")
     MerkleRootV2 merkleRoot;
     @jsonkey("p") @mpackkey("p")
     LinkTriple parentChain;
     @jsonkey("s") @mpackkey("s")
     Signer signer;
-  }
-
-  // The hidden chain, AKA chain17, doesn't show up in the merkle tree, it's just periodically
-  // pinned there.
-  record HiddenTeamChainState {
-
-    @lint("ignore")
-    TeamID ID;
-
-    // Whether this is a public team.
-    boolean public;
-
-    union { null, LinkTriple } last;
-
-    // Keyed by per-team-key generation
-    map<PerTeamKeyGeneration, PerTeamKey> perTeamKeys;
-
-    // Once we derive and check these seeds, we enter them here (as a cache of work).
-    map<PerTeamKeyGeneration,PerTeamKeySeed> perTeamKeySeedsVerified;
-
-    // Creation time of latest PerTeamKey, based on CTime from the
-    // link key appeared in.
-    UnixTime perTeamKeyCTime;
-
-    // This is filled up to lastSeqno.
-    map<Seqno, LinkID> linkIDs;
-
-    // For any link where we have it, fill in merkle sequence information,
-    // and parent chain pointer info.
-    map<Seqno, HiddenTeamSigChainLink> inners;
   }
 
   // FastTeamSigChainState is the state computed by doing a fast reply of the

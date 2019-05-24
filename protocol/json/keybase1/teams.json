@@ -526,24 +526,54 @@
     },
     {
       "type": "record",
-      "name": "HiddenTeamChain",
+      "name": "PerTeamKeyAndSeed",
       "fields": [
         {
-          "type": "HiddenTeamChainState",
-          "name": "state"
+          "type": "PerTeamKeySeed",
+          "name": "seed"
+        },
+        {
+          "type": "PerTeamKey",
+          "name": "publicKeys"
+        },
+        {
+          "type": "boolean",
+          "name": "verified"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "HiddenTeamChainData",
+      "fields": [
+        {
+          "type": "TeamID",
+          "name": "ID",
+          "lint": "ignore"
+        },
+        {
+          "type": "boolean",
+          "name": "public"
+        },
+        {
+          "type": "Seqno",
+          "name": "last"
         },
         {
           "type": {
             "type": "map",
-            "values": "PerTeamKeySeed",
-            "keys": "PerTeamKeyGeneration"
+            "values": "LinkID",
+            "keys": "Seqno"
           },
-          "name": "perTeamKeySeedsUnverified",
-          "mpackkey": "perTeamKeySeeds"
+          "name": "linkIDs"
         },
         {
-          "type": "PerTeamKeyGeneration",
-          "name": "latestKeyGeneration"
+          "type": {
+            "type": "map",
+            "values": "HiddenTeamChainLink",
+            "keys": "Seqno"
+          },
+          "name": "inner"
         },
         {
           "type": {
@@ -556,6 +586,32 @@
             "keys": "TeamApplication"
           },
           "name": "readerKeyMasks"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "PerTeamKeyAndSeed",
+            "keys": "PerTeamKeyGeneration"
+          },
+          "name": "perTeamKeys"
+        },
+        {
+          "type": "PerTeamKeyGeneration",
+          "name": "latestKeyGeneration"
+        },
+        {
+          "type": "UnixTime",
+          "name": "perTeamKeyCTime"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "HiddenTeamChain",
+      "fields": [
+        {
+          "type": "HiddenTeamChainData",
+          "name": "data"
         },
         {
           "type": [
@@ -648,7 +704,7 @@
     },
     {
       "type": "record",
-      "name": "HiddenTeamSigChainLink",
+      "name": "HiddenTeamChainLink",
       "fields": [
         {
           "type": "MerkleRootV2",
@@ -667,64 +723,6 @@
           "name": "signer",
           "jsonkey": "s",
           "mpackkey": "s"
-        }
-      ]
-    },
-    {
-      "type": "record",
-      "name": "HiddenTeamChainState",
-      "fields": [
-        {
-          "type": "TeamID",
-          "name": "ID",
-          "lint": "ignore"
-        },
-        {
-          "type": "boolean",
-          "name": "public"
-        },
-        {
-          "type": [
-            null,
-            "LinkTriple"
-          ],
-          "name": "last"
-        },
-        {
-          "type": {
-            "type": "map",
-            "values": "PerTeamKey",
-            "keys": "PerTeamKeyGeneration"
-          },
-          "name": "perTeamKeys"
-        },
-        {
-          "type": {
-            "type": "map",
-            "values": "PerTeamKeySeed",
-            "keys": "PerTeamKeyGeneration"
-          },
-          "name": "perTeamKeySeedsVerified"
-        },
-        {
-          "type": "UnixTime",
-          "name": "perTeamKeyCTime"
-        },
-        {
-          "type": {
-            "type": "map",
-            "values": "LinkID",
-            "keys": "Seqno"
-          },
-          "name": "linkIDs"
-        },
-        {
-          "type": {
-            "type": "map",
-            "values": "HiddenTeamSigChainLink",
-            "keys": "Seqno"
-          },
-          "name": "inners"
         }
       ]
     },
