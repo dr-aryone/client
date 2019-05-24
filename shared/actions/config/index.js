@@ -367,9 +367,8 @@ const routeToInitialScreen = state => {
 
 const handleAppLink = (_, action) => {
   const url = new URL(action.payload.link)
-  console.warn('Link is', action.payload.link)
-  if (action.payload.link.startsWith('keybase://')) {
-    console.warn('Got keybase link:', action.payload.link)
+  if (action.payload.link.startsWith('web+stellar:')) {
+    console.warn('Got SEP7 link:', action.payload.link)
   } else {
     const username = Constants.urlToUsername(url)
     if (username) {
