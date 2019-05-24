@@ -712,6 +712,10 @@ type FastTeamLoader interface {
 	Tombstone(MetaContext, keybase1.TeamID) error
 }
 
+type HiddenTeamChainLoader interface {
+	Load(MetaContext, keybase1.HTCLoadArg) (*keybase1.HiddenTeamChain, error)
+}
+
 type TeamAuditor interface {
 	AuditTeam(m MetaContext, id keybase1.TeamID, isPublic bool, headMerkleSeqno keybase1.Seqno, chain map[keybase1.Seqno]keybase1.LinkID, maxSeqno keybase1.Seqno) (err error)
 }

@@ -25,8 +25,9 @@ import (
 type Team struct {
 	libkb.Contextified
 
-	ID   keybase1.TeamID
-	Data *keybase1.TeamData
+	ID     keybase1.TeamID
+	Data   *keybase1.TeamData
+	Hidden *keybase1.HiddenTeamChain
 
 	keyManager *TeamKeyManager
 

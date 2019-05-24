@@ -238,16 +238,10 @@ protocol teams {
   }
 
   // Snapshot of a hidden team load
-  record HiddenTeamData {
-    // If set, all other members are invalid except for Chain.ID, Chain.Public,
-    // and Chain.Last.
-    boolean frozen;
-
-    // If set, cannot be loaded ever again. All other members are invalid.
-    boolean tombstoned;
+  record HiddenTeamChain {
 
     // Data derived from our (limited) replay of the team chain.
-    HiddenTeamSigChainState chain;
+    HiddenTeamChainState state;
 
     // These secrets may not match the team chain, always verify before use.
     // These secrets may be behind or missing if this is a public team.
@@ -263,8 +257,8 @@ protocol teams {
     map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
 
     // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
-    // The latest seqno of the remote team. Given by the server out of band.
-    // Used for caching.
+    // Chat or the main chain can "ratchet" our view of the hidden chain forward;
+    // we'll assert the ratchet is correct whenever we need to.
     union { null, HiddenTeamRatchet } ratchet;
 
     // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
@@ -291,13 +285,13 @@ protocol teams {
   }
 
   record HiddenTeamSigChainLink {
-    MerkleRootV2 unmerkleRoot;
+    MerkleRootV2 merkleRoot;
     LinkTriple parentChain;
   }
 
   // The hidden chain, AKA chain17, doesn't show up in the merkle tree, it's just periodically
   // pinned there.
-  record HiddenTeamSigChainState {
+  record HiddenTeamChainState {
 
     @lint("ignore")
     TeamID ID;
