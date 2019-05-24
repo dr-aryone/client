@@ -693,6 +693,65 @@ func (o FastTeamData) DeepCopy() FastTeamData {
 	}
 }
 
+type HiddenTeamChain struct {
+	State                     HiddenTeamChainState                                 `codec:"state" json:"state"`
+	PerTeamKeySeedsUnverified map[PerTeamKeyGeneration]PerTeamKeySeed              `codec:"perTeamKeySeeds" json:"perTeamKeySeedsUnverified"`
+	LatestKeyGeneration       PerTeamKeyGeneration                                 `codec:"latestKeyGeneration" json:"latestKeyGeneration"`
+	ReaderKeyMasks            map[TeamApplication]map[PerTeamKeyGeneration]MaskB64 `codec:"readerKeyMasks" json:"readerKeyMasks"`
+	Ratchet                   *LinkTriple                                          `codec:"ratchet,omitempty" json:"ratchet,omitempty"`
+	CachedAt                  Time                                                 `codec:"cachedAt" json:"cachedAt"`
+}
+
+func (o HiddenTeamChain) DeepCopy() HiddenTeamChain {
+	return HiddenTeamChain{
+		State: o.State.DeepCopy(),
+		PerTeamKeySeedsUnverified: (func(x map[PerTeamKeyGeneration]PerTeamKeySeed) map[PerTeamKeyGeneration]PerTeamKeySeed {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[PerTeamKeyGeneration]PerTeamKeySeed, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.PerTeamKeySeedsUnverified),
+		LatestKeyGeneration: o.LatestKeyGeneration.DeepCopy(),
+		ReaderKeyMasks: (func(x map[TeamApplication]map[PerTeamKeyGeneration]MaskB64) map[TeamApplication]map[PerTeamKeyGeneration]MaskB64 {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[TeamApplication]map[PerTeamKeyGeneration]MaskB64, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := (func(x map[PerTeamKeyGeneration]MaskB64) map[PerTeamKeyGeneration]MaskB64 {
+					if x == nil {
+						return nil
+					}
+					ret := make(map[PerTeamKeyGeneration]MaskB64, len(x))
+					for k, v := range x {
+						kCopy := k.DeepCopy()
+						vCopy := v.DeepCopy()
+						ret[kCopy] = vCopy
+					}
+					return ret
+				})(v)
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.ReaderKeyMasks),
+		Ratchet: (func(x *LinkTriple) *LinkTriple {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x).DeepCopy()
+			return &tmp
+		})(o.Ratchet),
+		CachedAt: o.CachedAt.DeepCopy(),
+	}
+}
+
 type LinkTriple struct {
 	Seqno   Seqno   `codec:"seqno" json:"seqno"`
 	SeqType SeqType `codec:"seqType" json:"seqType"`
@@ -734,6 +793,108 @@ func (o DownPointer) DeepCopy() DownPointer {
 		Id:            o.Id.DeepCopy(),
 		NameComponent: o.NameComponent,
 		IsDeleted:     o.IsDeleted,
+	}
+}
+
+type Signer struct {
+	E Seqno `codec:"e" json:"e"`
+	K KID   `codec:"k" json:"k"`
+	U UID   `codec:"u" json:"u"`
+}
+
+func (o Signer) DeepCopy() Signer {
+	return Signer{
+		E: o.E.DeepCopy(),
+		K: o.K.DeepCopy(),
+		U: o.U.DeepCopy(),
+	}
+}
+
+type HiddenTeamSigChainLink struct {
+	MerkleRoot  MerkleRootV2 `codec:"m" json:"m"`
+	ParentChain LinkTriple   `codec:"p" json:"p"`
+	Signer      Signer       `codec:"s" json:"s"`
+}
+
+func (o HiddenTeamSigChainLink) DeepCopy() HiddenTeamSigChainLink {
+	return HiddenTeamSigChainLink{
+		MerkleRoot:  o.MerkleRoot.DeepCopy(),
+		ParentChain: o.ParentChain.DeepCopy(),
+		Signer:      o.Signer.DeepCopy(),
+	}
+}
+
+type HiddenTeamChainState struct {
+	ID                      TeamID                                  `codec:"ID" json:"ID"`
+	Public                  bool                                    `codec:"public" json:"public"`
+	Last                    *LinkTriple                             `codec:"last,omitempty" json:"last,omitempty"`
+	PerTeamKeys             map[PerTeamKeyGeneration]PerTeamKey     `codec:"perTeamKeys" json:"perTeamKeys"`
+	PerTeamKeySeedsVerified map[PerTeamKeyGeneration]PerTeamKeySeed `codec:"perTeamKeySeedsVerified" json:"perTeamKeySeedsVerified"`
+	PerTeamKeyCTime         UnixTime                                `codec:"perTeamKeyCTime" json:"perTeamKeyCTime"`
+	LinkIDs                 map[Seqno]LinkID                        `codec:"linkIDs" json:"linkIDs"`
+	Inners                  map[Seqno]HiddenTeamSigChainLink        `codec:"inners" json:"inners"`
+}
+
+func (o HiddenTeamChainState) DeepCopy() HiddenTeamChainState {
+	return HiddenTeamChainState{
+		ID:     o.ID.DeepCopy(),
+		Public: o.Public,
+		Last: (func(x *LinkTriple) *LinkTriple {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x).DeepCopy()
+			return &tmp
+		})(o.Last),
+		PerTeamKeys: (func(x map[PerTeamKeyGeneration]PerTeamKey) map[PerTeamKeyGeneration]PerTeamKey {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[PerTeamKeyGeneration]PerTeamKey, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.PerTeamKeys),
+		PerTeamKeySeedsVerified: (func(x map[PerTeamKeyGeneration]PerTeamKeySeed) map[PerTeamKeyGeneration]PerTeamKeySeed {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[PerTeamKeyGeneration]PerTeamKeySeed, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.PerTeamKeySeedsVerified),
+		PerTeamKeyCTime: o.PerTeamKeyCTime.DeepCopy(),
+		LinkIDs: (func(x map[Seqno]LinkID) map[Seqno]LinkID {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[Seqno]LinkID, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.LinkIDs),
+		Inners: (func(x map[Seqno]HiddenTeamSigChainLink) map[Seqno]HiddenTeamSigChainLink {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[Seqno]HiddenTeamSigChainLink, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.Inners),
 	}
 }
 

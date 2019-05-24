@@ -229,37 +229,29 @@ protocol teams {
     boolean loadedLatest;
   }
 
-  // HiddenTeamRatchet is the latest hidden chain tail link known for this team;
-  // the existence of a known ratchet means the team better be at least up to this
-  // point, and maybe beyond it.
-  record HiddenTeamRatchet {
-    Seqno seqno;
-    LinkID hash;
-  }
-
   // Snapshot of a hidden team load
   record HiddenTeamChain {
 
     // Data derived from our (limited) replay of the team chain.
     HiddenTeamChainState state;
 
-    // These secrets may not match the team chain, always verify before use.
-    // These secrets may be behind or missing if this is a public team.
-    // generation -> seed
-    // generations _must_ start from 1 with no gaps
     @mpackkey("perTeamKeySeeds")
     map<PerTeamKeyGeneration,PerTeamKeySeed> perTeamKeySeedsUnverified;
 
     PerTeamKeyGeneration latestKeyGeneration;
 
     // application -> generation -> mask
-    // in each slot generations _must_ start from 1 with no gaps
+    // there can be gaps, since only some masks are stored in the hidden chains;
+    // the other might be stored in the main chain (chain3)
     map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
 
     // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
     // Chat or the main chain can "ratchet" our view of the hidden chain forward;
     // we'll assert the ratchet is correct whenever we need to.
-    union { null, HiddenTeamRatchet } ratchet;
+    // This is the latest hidden chain tail link known for this team;
+    // the existence of a known ratchet means the team better be at least up to this
+    // point, and maybe beyond it.
+    union { null, LinkTriple } ratchet;
 
     // Should only be used by TeamLoader (because it is mutable, not threadsafe to read)
     Time cachedAt;
@@ -284,9 +276,19 @@ protocol teams {
     boolean isDeleted;
   }
 
+  record Signer {
+    Seqno e; // eldest seqno
+    KID k;   // signer KID
+    UID u;   // signer UID
+  }
+
   record HiddenTeamSigChainLink {
+    @jsonkey("m") @mpackkey("m")
     MerkleRootV2 merkleRoot;
+    @jsonkey("p") @mpackkey("p")
     LinkTriple parentChain;
+    @jsonkey("s") @mpackkey("s")
+    Signer signer;
   }
 
   // The hidden chain, AKA chain17, doesn't show up in the merkle tree, it's just periodically

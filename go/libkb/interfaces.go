@@ -712,8 +712,10 @@ type FastTeamLoader interface {
 	Tombstone(MetaContext, keybase1.TeamID) error
 }
 
-type HiddenTeamChainLoader interface {
-	Load(MetaContext, keybase1.HTCLoadArg) (*keybase1.HiddenTeamChain, error)
+type HiddenTeamChainManager interface {
+	Ratchet(MetaContext, keybase1.TeamID, keybase1.LinkTriple) error
+	Advance(MetaContext, keybase1.TeamID /* something here */) error
+	Load(MetaContext, keybase1.TeamID) (*keybase1.HiddenTeamChain, error)
 }
 
 type TeamAuditor interface {

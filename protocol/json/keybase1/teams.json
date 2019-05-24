@@ -526,6 +526,52 @@
     },
     {
       "type": "record",
+      "name": "HiddenTeamChain",
+      "fields": [
+        {
+          "type": "HiddenTeamChainState",
+          "name": "state"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "PerTeamKeySeed",
+            "keys": "PerTeamKeyGeneration"
+          },
+          "name": "perTeamKeySeedsUnverified",
+          "mpackkey": "perTeamKeySeeds"
+        },
+        {
+          "type": "PerTeamKeyGeneration",
+          "name": "latestKeyGeneration"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": {
+              "type": "map",
+              "values": "MaskB64",
+              "keys": "PerTeamKeyGeneration"
+            },
+            "keys": "TeamApplication"
+          },
+          "name": "readerKeyMasks"
+        },
+        {
+          "type": [
+            null,
+            "LinkTriple"
+          ],
+          "name": "ratchet"
+        },
+        {
+          "type": "Time",
+          "name": "cachedAt"
+        }
+      ]
+    },
+    {
+      "type": "record",
       "name": "LinkTriple",
       "fields": [
         {
@@ -579,6 +625,106 @@
         {
           "type": "boolean",
           "name": "isDeleted"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Signer",
+      "fields": [
+        {
+          "type": "Seqno",
+          "name": "e"
+        },
+        {
+          "type": "KID",
+          "name": "k"
+        },
+        {
+          "type": "UID",
+          "name": "u"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "HiddenTeamSigChainLink",
+      "fields": [
+        {
+          "type": "MerkleRootV2",
+          "name": "merkleRoot",
+          "jsonkey": "m",
+          "mpackkey": "m"
+        },
+        {
+          "type": "LinkTriple",
+          "name": "parentChain",
+          "jsonkey": "p",
+          "mpackkey": "p"
+        },
+        {
+          "type": "Signer",
+          "name": "signer",
+          "jsonkey": "s",
+          "mpackkey": "s"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "HiddenTeamChainState",
+      "fields": [
+        {
+          "type": "TeamID",
+          "name": "ID",
+          "lint": "ignore"
+        },
+        {
+          "type": "boolean",
+          "name": "public"
+        },
+        {
+          "type": [
+            null,
+            "LinkTriple"
+          ],
+          "name": "last"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "PerTeamKey",
+            "keys": "PerTeamKeyGeneration"
+          },
+          "name": "perTeamKeys"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "PerTeamKeySeed",
+            "keys": "PerTeamKeyGeneration"
+          },
+          "name": "perTeamKeySeedsVerified"
+        },
+        {
+          "type": "UnixTime",
+          "name": "perTeamKeyCTime"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "LinkID",
+            "keys": "Seqno"
+          },
+          "name": "linkIDs"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "HiddenTeamSigChainLink",
+            "keys": "Seqno"
+          },
+          "name": "inners"
         }
       ]
     },
