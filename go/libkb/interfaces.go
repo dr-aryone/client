@@ -719,9 +719,10 @@ type HiddenTeamChainManager interface {
 	// We got a bunch of new links downloaded via slow or fast loader, so add them
 	// onto the HiddenTeamChain state.
 	Advance(MetaContext, keybase1.HiddenTeamChainData) error
-	// Acceess the previously advanced state for the given (app X gen) pairs.
-	// Some data will be folded into the Fast or Slow loaders, so return more than just a FastTeamLoadRes
-	Access(MetaContext, keybase1.FastTeamLoadArg) (keybase1.HiddenTeamChainLoadRes, error)
+	// Acceess the previously advanced state; lookup a PerTeamKey given the PerTeamKeyGeneration
+	PerTeamKeyAtGeneration(MetaContext, keybase1.TeamID, keybase1.PerTeamKeyGeneration) (*keybase1.PerTeamKey, error)
+	// Access the tail of the HiddenTeamChain, for embedding into gossip vectors.
+	Tail(MetaContext, keybase1.TeamID) (*keybase1.LinkTriple, error)
 }
 
 type TeamAuditor interface {

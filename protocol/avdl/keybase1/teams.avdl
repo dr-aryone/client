@@ -229,39 +229,29 @@ protocol teams {
     boolean loadedLatest;
   }
 
-  record PerTeamKeyAndSeed {
-    PerTeamKeySeed seed;
-    PerTeamKey publicKeys;
-    boolean verified;
-  }
-
   record HiddenTeamChainData {
     @lint("ignore") TeamID ID;
     boolean public;
 
     Seqno last;
-    map<Seqno, LinkID> linkIDs;
+
+    // Chain links based on outer objects.
+    map<Seqno, LinkID> outer;
+
     // For any link where we have it, fill in merkle sequence information,
-    // and parent chain pointer info.
+    // parent chain pointer info, and also PTK information (inner data);
     map<Seqno, HiddenTeamChainLink> inner;
 
-    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
-
-    map<PerTeamKeyGeneration,PerTeamKeyAndSeed> perTeamKeys;
-    PerTeamKeyGeneration latestKeyGeneration;
-    // Creation time of latest PerTeamKey, based on CTime from the
-    // link key appeared in.
-    UnixTime perTeamKeyCTime;
-
-    // True if we last loaded this chain for the "latest" version; sometimes
-    // we don't, depending on the access patterns
-    boolean loadedLatest;
   }
 
   // Snapshot of a hidden team load
   record HiddenTeamChain {
 
     HiddenTeamChainData data;
+
+    // Maps a PTK Generation to the chain seqno it showed up in; more info there as
+    // to what the PTK is, etc.
+    map<PerTeamKeyGeneration, Seqno> perTeamKeys;
 
     // This is the latest hidden chain tail link known for this team;
     // the existence of a known ratchet means the team better be at least up to this
@@ -304,6 +294,8 @@ protocol teams {
     LinkTriple parentChain;
     @jsonkey("s") @mpackkey("s")
     Signer signer;
+    @jsonkey("k") @mpackkey("k")
+    PerTeamKey ptk;
   }
 
   // FastTeamSigChainState is the state computed by doing a fast reply of the
@@ -841,11 +833,6 @@ protocol teams {
     // Specify this flag if you want to force past the time-based cache,
     // currently set to one hour.
     boolean forceRefresh;
-  }
-
-  record HiddenTeamChainLoadRes {
-    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
-    map<PerTeamKeyGeneration,PerTeamKeyAndSeed> perTeamKeys;
   }
 
   record FastTeamLoadRes {
