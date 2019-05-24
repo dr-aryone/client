@@ -717,6 +717,7 @@ type HiddenTeamChainData struct {
 	PerTeamKeys         map[PerTeamKeyGeneration]PerTeamKeyAndSeed           `codec:"perTeamKeys" json:"perTeamKeys"`
 	LatestKeyGeneration PerTeamKeyGeneration                                 `codec:"latestKeyGeneration" json:"latestKeyGeneration"`
 	PerTeamKeyCTime     UnixTime                                             `codec:"perTeamKeyCTime" json:"perTeamKeyCTime"`
+	LoadedLatest        bool                                                 `codec:"loadedLatest" json:"loadedLatest"`
 }
 
 func (o HiddenTeamChainData) DeepCopy() HiddenTeamChainData {
@@ -785,6 +786,7 @@ func (o HiddenTeamChainData) DeepCopy() HiddenTeamChainData {
 		})(o.PerTeamKeys),
 		LatestKeyGeneration: o.LatestKeyGeneration.DeepCopy(),
 		PerTeamKeyCTime:     o.PerTeamKeyCTime.DeepCopy(),
+		LoadedLatest:        o.LoadedLatest,
 	}
 }
 
@@ -2280,6 +2282,51 @@ func (o FastTeamLoadArg) DeepCopy() FastTeamLoadArg {
 		})(o.KeyGenerationsNeeded),
 		NeedLatestKey: o.NeedLatestKey,
 		ForceRefresh:  o.ForceRefresh,
+	}
+}
+
+type HiddenTeamChainLoadRes struct {
+	ReaderKeyMasks map[TeamApplication]map[PerTeamKeyGeneration]MaskB64 `codec:"readerKeyMasks" json:"readerKeyMasks"`
+	PerTeamKeys    map[PerTeamKeyGeneration]PerTeamKeyAndSeed           `codec:"perTeamKeys" json:"perTeamKeys"`
+}
+
+func (o HiddenTeamChainLoadRes) DeepCopy() HiddenTeamChainLoadRes {
+	return HiddenTeamChainLoadRes{
+		ReaderKeyMasks: (func(x map[TeamApplication]map[PerTeamKeyGeneration]MaskB64) map[TeamApplication]map[PerTeamKeyGeneration]MaskB64 {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[TeamApplication]map[PerTeamKeyGeneration]MaskB64, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := (func(x map[PerTeamKeyGeneration]MaskB64) map[PerTeamKeyGeneration]MaskB64 {
+					if x == nil {
+						return nil
+					}
+					ret := make(map[PerTeamKeyGeneration]MaskB64, len(x))
+					for k, v := range x {
+						kCopy := k.DeepCopy()
+						vCopy := v.DeepCopy()
+						ret[kCopy] = vCopy
+					}
+					return ret
+				})(v)
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.ReaderKeyMasks),
+		PerTeamKeys: (func(x map[PerTeamKeyGeneration]PerTeamKeyAndSeed) map[PerTeamKeyGeneration]PerTeamKeyAndSeed {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[PerTeamKeyGeneration]PerTeamKeyAndSeed, len(x))
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.PerTeamKeys),
 	}
 }
 

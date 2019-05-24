@@ -252,6 +252,10 @@ protocol teams {
     // Creation time of latest PerTeamKey, based on CTime from the
     // link key appeared in.
     UnixTime perTeamKeyCTime;
+
+    // True if we last loaded this chain for the "latest" version; sometimes
+    // we don't, depending on the access patterns
+    boolean loadedLatest;
   }
 
   // Snapshot of a hidden team load
@@ -837,6 +841,11 @@ protocol teams {
     // Specify this flag if you want to force past the time-based cache,
     // currently set to one hour.
     boolean forceRefresh;
+  }
+
+  record HiddenTeamChainLoadRes {
+    map<TeamApplication,map<PerTeamKeyGeneration,MaskB64>> readerKeyMasks;
+    map<PerTeamKeyGeneration,PerTeamKeyAndSeed> perTeamKeys;
   }
 
   record FastTeamLoadRes {

@@ -602,6 +602,10 @@
         {
           "type": "UnixTime",
           "name": "perTeamKeyCTime"
+        },
+        {
+          "type": "boolean",
+          "name": "loadedLatest"
         }
       ]
     },
@@ -1936,6 +1940,32 @@
         {
           "type": "boolean",
           "name": "forceRefresh"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "HiddenTeamChainLoadRes",
+      "fields": [
+        {
+          "type": {
+            "type": "map",
+            "values": {
+              "type": "map",
+              "values": "MaskB64",
+              "keys": "PerTeamKeyGeneration"
+            },
+            "keys": "TeamApplication"
+          },
+          "name": "readerKeyMasks"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "PerTeamKeyAndSeed",
+            "keys": "PerTeamKeyGeneration"
+          },
+          "name": "perTeamKeys"
         }
       ]
     },

@@ -713,9 +713,16 @@ type FastTeamLoader interface {
 }
 
 type HiddenTeamChainManager interface {
+	// We got gossip about what the latest chain-tail should be, so racthet the
+	// chain forward; the next call to Advance() has to match.
 	Ratchet(MetaContext, keybase1.TeamID, keybase1.LinkTriple) error
-	Advance(MetaContext, keybase1.TeamID /* something here */) error
-	Load(MetaContext, keybase1.TeamID) (*keybase1.HiddenTeamChain, error)
+	// We got a bunch of new links downloaded via slow or fast loader, so add them
+	// onto the HiddenTeamChain state.
+	Advance(MetaContext, keybase1.HiddenTeamChainData) error
+	// Acceess the previously advanced states the given app X gen pairs from the hidden
+	// chain. Some data will be folded into the Fast or Slow loaders, so return more
+	// than just a FastTeamLoadRes
+	Access(MetaContext, keybase1.FastTeamLoadArg) (keybase1.HiddenTeamChainLoadRes, error)
 }
 
 type TeamAuditor interface {
