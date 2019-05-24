@@ -22,7 +22,7 @@ type Props = {
   body: React.Node,
   firstItem: boolean,
   action?: React.Node,
-  onlyShowActionOnHover?: ?boolean,
+  onlyShowActionOnHover?: 'appear' | 'animate' | null,
   onClick?: () => void,
 }
 
@@ -30,13 +30,18 @@ const HoverBox = Styles.isMobile
   ? Box2
   : Styles.styled(Box2)({
       '.hidden-no-hover': {
-        ...Styles.transition('max-width'),
         justifyContent: 'flex-end',
         maxWidth: 0,
         overflow: 'hidden',
       },
+      '.hidden-no-hover-animate': {
+        ...Styles.transition('max-width'),
+      },
       ':hover': {
         backgroundColor: Styles.globalColors.blueLighter2,
+      },
+      ':hover .avatar-border': {
+        boxShadow: `0px 0px 0px 2px ${Styles.globalColors.blueLighter2} !important`,
       },
       ':hover .hidden-no-hover': {
         maxWidth: 64,
@@ -59,6 +64,17 @@ const iconStyle = (props: Props) =>
     : props.statusIcon
     ? styles.iconLargeWithStatusIcon
     : styles.iconLarge
+
+const getActionClasses = onlyShowActionOnHover => {
+  switch (onlyShowActionOnHover) {
+    case 'animate':
+      return 'hidden-no-hover-animate hidden-no-hover'
+    case 'appear':
+      return 'hidden-no-hover'
+    default:
+      return null
+  }
+}
 
 const ListItem = (props: Props) => (
   <Kb.ClickableBox
@@ -90,7 +106,7 @@ const ListItem = (props: Props) => (
         </Kb.BoxGrow>
         <Kb.Box2
           direction="horizontal"
-          className={props.onlyShowActionOnHover ? 'hidden-no-hover' : null}
+          className={getActionClasses(props.onlyShowActionOnHover)}
           style={Styles.collapseStyles([
             props.type === 'Small' ? styles.actionSmallContainer : styles.actionLargeContainer,
             props.onlyShowActionOnHover ? styles.hiddenNoHoverAction : {},

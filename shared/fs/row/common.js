@@ -13,6 +13,7 @@ export type StillCommonProps = {
   inDestinationPicker?: boolean,
   onOpen: () => void,
   routePath: I.List<string>,
+  animateActions?: ?boolean,
 }
 
 export const StillCommon = (
@@ -30,7 +31,7 @@ export const StillCommon = (
     firstItem={true /* we add divider in Rows */}
     onClick={props.onOpen}
     body={props.children}
-    onlyShowActionOnHover={true}
+    onlyShowActionOnHover={props.animateActions ? 'animate' : 'appear'}
     action={
       !props.inDestinationPicker &&
       Types.getPathLevel(props.path) > 2 && (
