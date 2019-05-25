@@ -246,6 +246,8 @@ protocol teams {
 
   // Snapshot of a hidden team load
   record HiddenTeamChain {
+    @mpackkey("v") @jsonkey("v")
+    int subversion;
 
     HiddenTeamChainData data;
 
